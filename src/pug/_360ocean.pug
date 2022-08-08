@@ -1,0 +1,20 @@
+a-scene(vr-mode-ui="enabled: false"
+        cursor="rayOrigin: mouse; fuse: false"
+        raycaster="objects: .clickable")
+    a-assets
+        img(id="ocean-background" src="img/8k-1.jpg")
+    
+    a-camera(look-controls="enabled: true; reverseMouseDrag: true"
+        wasd-controls="enabled: false" fov="60" position="0 0 0")
+
+    a-sky(material="src: #ocean-background")
+
+    //- Create rigged objects
+    - for(let i=0; i < 2; i++)
+        +partials_sea-object({color: '#ffdddd', className: 'red', link: `2_${i+1}.html`})
+        
+    - for(let i=0; i < 2; i++)
+        +partials_sea-object({color: '#ddffdd', className: 'green', link: `1_${i+1}.html`})
+        
+    - for(let i=0; i < 3; i++)
+        +partials_sea-object({color: '#ddffdd', className: 'greenSmall', link: `1_1${String.fromCharCode(65+i)}.html`})

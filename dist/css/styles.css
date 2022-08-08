@@ -1,0 +1,126 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+html {
+  --color-primary: #614d4d;
+  --color-secondary: #ffffee;
+  --color-overlay: rgba(0,0,0,0.7);
+  --s1: 1em;
+  --s2: 2em;
+  --s3: 3em;
+  --s4: 4em;
+}
+
+.u-top-0 {
+  top: 0;
+}
+
+.u-height-100vh {
+  height: 100vh;
+}
+
+.u-width-100 {
+  width: 100%;
+}
+
+.u-position-absolute {
+  position: absolute;
+}
+
+.u-pointer-events-none {
+  pointer-events: none;
+}
+
+.u-pointer-events-all {
+  pointer-events: all;
+}
+
+.u-top {
+  top: var(--t);
+}
+
+.u-left {
+  left: var(--l);
+}
+
+.u-right {
+  right: var(--r);
+}
+
+.u-bottom {
+  bottom: var(--b);
+}
+
+.u-z-index {
+  z-index: var(--z);
+}
+
+.u-background-color {
+  background-color: var(--b);
+}
+
+.u-padding {
+  padding: var(--p);
+}
+
+.view-fade-in {
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: 0.4s;
+}
+.view-fade-in--visible {
+  opacity: 1;
+}
+
+.view-togglable-pointer {
+  pointer-events: none;
+}
+.view-togglable-pointer--active {
+  pointer-events: all;
+}
+
+.shape-popup {
+  width: 80%;
+  height: 80%;
+  border-radius: 20px;
+}
+
+.color-dark-bg {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.l-flex {
+  --j: center;
+  --a: center;
+  --d: row;
+  display: flex;
+  justify-content: var(--j);
+  align-items: var(--a);
+  flex-direction: var(--d);
+}
+
+.l-abs > * {
+  position: absolute;
+}
+
+.l-spacer {
+  --s: 0;
+  height: var(--s);
+}
