@@ -22,12 +22,13 @@ mixin partials_sea-object(config)
     - const geometryString = `primitive: circle; radius: ${rad}`;
     - const materialString = `color: ${color}`;
     - const classString = `clickable ${className}`;
+    - const positionString = `0 0 -${Math.round(Math.random()*2 + 4)}`;
     //-Markup
     a-entity.wanderer(animation rotation=a)
         a-entity.js-load-content(
             class=classString
             geometry=geometryString
             material=materialString
-            position="0 0 -4"
+            position=positionString
             href=link
             )

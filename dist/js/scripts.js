@@ -10,12 +10,13 @@ if(document.querySelector('html').classList.contains('home')){
 
 function setupLocalClosingListeners(wrapper) {
     const contentClosers = wrapper.querySelectorAll('.js-close-modal');
+
     for(let closer of contentClosers){
         closer.addEventListener('click', function localContentCloser(event) {
             event.preventDefault();
             let element = event.target;
             element.removeEventListener('click', localContentCloser);
-            //Eliminar contenido actual
+            //Ocultar y eliminar contenido actual
             hideModal(wrapper).then(() => {
                 wrapper.remove();
             });

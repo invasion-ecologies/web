@@ -15,3 +15,7 @@ a-scene(vr-mode-ui="enabled: false"
 
     - for(let i=0; i < 6; i++)
         +partials_sea-object({color: '#ffdddd', className: 'red', link: `ana-0${i+1}.html`})
+
+    - const modalNames = ['A1','A2','A3','A4','B1','C1','C2','D1','E1','E2'];
+    - for(let name of modalNames)
+        +partials_sea-object({color: '#ddffdd', className: 'greenSmall', link: `mariela-${name}.html`})
