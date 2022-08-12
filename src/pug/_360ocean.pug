@@ -10,11 +10,8 @@ a-scene(vr-mode-ui="enabled: false"
     a-sky(material="src: #ocean-background")
 
     //- Create rigged objects
-    - for(let i=0; i < 2; i++)
-        +partials_sea-object({color: '#ffdddd', className: 'red', link: `2_${i+1}.html`})
-        
-    - for(let i=0; i < 2; i++)
-        +partials_sea-object({color: '#ddffdd', className: 'green', link: `1_${i+1}.html`})
-        
-    - for(let i=0; i < 3; i++)
-        +partials_sea-object({color: '#ddffdd', className: 'greenSmall', link: `1_1${String.fromCharCode(65+i)}.html`})
+    - for(let i=0; i < 5; i++)
+        +partials_sea-object({color: '#ddffdd', className: 'green', link: `mariela-${String.fromCharCode(65+i)}.html`})
+
+    - for(let i=0; i < 6; i++)
+        +partials_sea-object({color: '#ffdddd', className: 'red', link: `ana-0${i+1}.html`})
