@@ -15,11 +15,15 @@ function setupLocalClosingListeners(wrapper) {
         closer.addEventListener('click', function localContentCloser(event) {
             event.preventDefault();
             let element = event.target;
-            element.removeEventListener('click', localContentCloser);
-            //Ocultar y eliminar contenido actual
-            hideModal(wrapper).then(() => {
-                wrapper.remove();
-            });
+            console.log(element);
+            if(element.classList.contains('js-close-modal')){
+                element.removeEventListener('click', localContentCloser);
+                //Ocultar y eliminar contenido actual
+                hideModal(wrapper).then(() => {
+                    wrapper.remove();
+                });
+            }
+
         });
     }
 
