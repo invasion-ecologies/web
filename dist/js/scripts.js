@@ -1,13 +1,16 @@
-//Inicializar funciones de a-frame y popups en el home
+//Si estamos en el home, inicializar las figuras que se desplazan en a-frame
 if(document.querySelector('html').classList.contains('home')){
     //Wanderers
     const WDR = new Wanderers('.wanderer');
-    //Popups
+    //Asignar event listeners a las figuras para abrir los modales
     setupGlobalLoaderListeners();
 }
 
+
 //TODO: Agrupar estas funciones en un componente/clase Popup
 
+
+//Self-removing listeners
 function setupLocalClosingListeners(wrapper) {
     const contentClosers = wrapper.querySelectorAll('.js-close-modal');
 
@@ -15,7 +18,6 @@ function setupLocalClosingListeners(wrapper) {
         closer.addEventListener('click', function localContentCloser(event) {
             event.preventDefault();
             let element = event.target;
-            console.log(element);
             if(element.classList.contains('js-close-modal')){
                 element.removeEventListener('click', localContentCloser);
                 //Ocultar y eliminar contenido actual
@@ -26,19 +28,23 @@ function setupLocalClosingListeners(wrapper) {
 
         });
     }
-
 }
+
 
 function setupGlobalLoaderListeners () {
     //Listeners que existen mientras la página esté abierta
     const contentLoaders = document.querySelectorAll('.js-load-content');
     for(let loader of contentLoaders){
         loader.addEventListener('click', (event) => {
-            console.log('global click');
             event.preventDefault();
-            let element = event.target;
-            let link = element.getAttribute('href');
-            loadContent(link);
+            let link = event.target.getAttribute('href');
+            let scripts = event.target.dataset.scripts ? JSON.parse(event.target.dataset.scripts) : [];
+            let dependencies = event.target.dataset.dependencies ? JSON.parse(event.target.dataset.dependencies) : [];
+            loadModal({
+                link: link,
+                scripts: scripts,
+                dependencies: dependencies,
+            });
         })
     }
 }
@@ -47,106 +53,126 @@ function setupLocalLoaderListeners (wrapper) {
     //Loaders que dejan de existir al cargar un nuevo contenido
     const contentLoaders = wrapper.querySelectorAll('.js-load-content');
     for(let loader of contentLoaders){
-
         loader.addEventListener('click', function localContentLoader(event) {
             event.preventDefault();
             let element = event.target;
-            element.removeEventListener('click', localContentLoader)
+            element.removeEventListener('click', localContentLoader);
             let link = element.getAttribute('href');
+            let scripts = element.dataset.scripts ? JSON.parse(element.dataset.scripts) : [];
+            let dependencies = element.dataset.scripts ? JSON.parse(element.dataset.dependencies) : [];
 
             //Eliminar contenido actual, y después mostrar el nuevo contenido
             hideModal(wrapper).then(() => {
                 wrapper.remove();
-                loadContent(link);
+                loadModal({
+                    link: link,
+                    scripts: scripts,
+                    dependencies: dependencies,
+                });
             });
         });
     }
 }
 
+
 function hideModal(wrapper){
     const popupBody = wrapper.querySelector('#popup-main');
-
     return new Promise((resolve, reject) => {
-
-        popupBody.addEventListener('transitionend', () => {
-            resolve();
-        })
-
+        popupBody.addEventListener('transitionend', () => { resolve(); });
+       
         if(popupBody.classList.contains('view-fade-in--visible')){
             popupBody.classList.remove('view-fade-in--visible');
         }
-    
+       
         if(popupBody.classList.contains('view-togglable-pointer-events--active')){
             popupBody.classList.remove('view-togglable-pointer-events--active');
         }
     });
 }
 
-function showModal(wrapper) {
-    const popupBody = wrapper.querySelector('#popup-main');
 
-    popupBody.getBoundingClientRect(); //Forzar reflow
+// function showModal(wrapper) {
+//     const popupBody = wrapper.querySelector('#popup-main');
 
-    if(! popupBody.classList.contains('view-fade-in--visible')){
-        popupBody.classList.add('view-fade-in--visible');
+//     if(! popupBody.classList.contains('view-fade-in--visible')){
+//         popupBody.classList.add('view-fade-in--visible');
+//     }
+//     if(! popupBody.classList.contains('view-togglable-pointer-events--active')){
+//         popupBody.classList.add('view-togglable-pointer-events--active');
+//     }
+// }
+
+function loadModal(options){
+    let {link, scripts, dependencies} = options;
+    if ([link, scripts, dependencies].some((value) => {return value === undefined})){
+        throw 'undefined arguments found for loadModal';
     }
-    if(! popupBody.classList.contains('view-togglable-pointer-events--active')){
-        popupBody.classList.add('view-togglable-pointer-events--active');
+    getContent({url: link}).then((wrapper) => {
+        //1- Load dynamic DOM content    
+        document.querySelector('body').append(wrapper); //agregar el contenido
+        forceReflow(wrapper); //Forzar reflow; preparar para transiciones
+        setupLocalLoaderListeners(wrapper);
+        setupLocalClosingListeners(wrapper);
+
+        const modal = wrapper.querySelector('#popup-main');
+        if(! modal.classList.contains('view-fade-in--visible')){
+            modal.classList.add('view-fade-in--visible');
+        }
+        if(! modal.classList.contains('view-togglable-pointer-events--active')){
+            modal.classList.add('view-togglable-pointer-events--active');
+        }
+
+        //2- Add scripts to the wrapper we just added to the DOM
+        registerScriptDependencies(dependencies);
+        registerDynamicScripts(scripts, wrapper);
+    });
+
+}
+
+function registerScriptDependencies(scripts){
+        const body = document.querySelector('body');
+        let alreadyLoadedScripts = [...document.querySelectorAll('script')].map(script => script.src);
+        for(let scriptUrl of scripts){
+                if ( alreadyLoadedScripts.some(url => url.includes(scriptUrl)) ){
+                    console.log(`${scriptUrl} already registered. Skipping`);
+                    continue;
+                }
+                const scriptElement = document.createElement('script');
+                scriptElement.src = scriptUrl;
+                body.append(scriptElement);
+        } 
+}
+
+function registerDynamicScripts(scripts, wrapper){
+    for (let scriptUrl of scripts){
+        const scriptElement = document.createElement('script');
+        scriptElement.src = scriptUrl;
+        wrapper.append(scriptElement);
     }
+
+}
+
+function getContent(options) {
+    return new Promise((resolve) => {
+
+        const {url, wrapperClasses, wrapperId, parent} = options;
+        fetch('contents/'+url).then((response) => {
+            return response.text();
+        })
+        .then((content) => {
+            const wrapper = document.createElement('div');
+            if(wrapperClasses !== undefined) {
+                for(let className of wrapperClasses) { wrapper.classList.add(className) };
+            }
+            if(wrapperId !== undefined) wrapper.id = wrapperId;
+            wrapper.innerHTML = content;
+            resolve(wrapper);
+        });
+
+    });
 }
 
 
-function loadContent(url) {
-    fetch('contents/'+url).then((response) => {
-        console.log('content promise done');
-        return response.text();
-    })
-    .then((content) => {
-        const modal = document.createElement('div');
-        modal.innerHTML = content;
-        const body = document.querySelector('body');
-        body.append(modal); //agregar el contenido
-
-        showModal(modal);
-        setupLocalLoaderListeners(modal);
-        setupLocalClosingListeners(modal);
-    });
-
-
-
-    // Manage content visibility
-    // console.log('loading content...');
-
-    // const transitionPromise = new Promise((resolve) => {
-    //     //If the popup already has content, wait until it has faded out before resolving:
-    //     if(contentWrapper.classList.contains('view-fade-in--visible')){
-    //         console.log('popup has content');
-    //         contentWrapper.classList.remove('view-fade-in--visible');
-    //         contentWrapper.addEventListener('transitionend', function animationendListener() {
-    //             contentWrapper.removeEventListener('transitionend', animationendListener);
-    //             contentWrapper.classList.add('view-fade-in--visible');
-    //             resolve();
-    //         });
-    //     }
-    //     //Else, resolve immediately:
-    //     else {
-    //         console.log('popup does not have content');
-    //         contentWrapper.classList.add('view-fade-in--visible');
-    //         resolve();
-    //     }
-    //     console.log('transition promise done');
-    // });
-
-    // Promise.all([
-    //     fetch('contents/'+url).then((response) => {
-    //         console.log('content promise done');
-    //         return response.text();
-    //     }),
-    //     transitionPromise
-    // ])
-    // .then((returnedValues) => {
-    //     const content = returnedValues[0];
-    //     contentWrapper.innerHTML = content;
-    //     setupLocalLoaderListeners();
-    // });
+function forceReflow(el){
+    el.getBoundingClientRect();
 }

@@ -3,6 +3,11 @@ a-scene(vr-mode-ui="enabled: false"
         raycaster="objects: .clickable")
     a-assets
         img(id="ocean-background" src="img/8k-1.jpg")
+        img(id="ana-1" src="img/ojo.png")
+        img(id="ana-2" src="img/ave_pico.png")
+        img(id="ana-3" src="img/ave_pico_izq.png")
+        img(id="ana-4" src="img/alga_cotorra_maquina.png")
+        img(id="ana-5" src="img/alga_reves.png")
     
     a-camera(look-controls="enabled: true; reverseMouseDrag: true"
         wasd-controls="enabled: false" fov="60" position="0 0 0")
@@ -11,10 +16,23 @@ a-scene(vr-mode-ui="enabled: false"
 
     //- Create rigged objects
     - for(let i=0; i < 5; i++)
-        +partials_sea-object({color: '#ddffdd', className: 'green', link: `mariela-${String.fromCharCode(65+i)}.html`})
+        +partials_sea-object({
+            color: '#ddffdd', 
+            className: 'green', 
+            link: `mariela-${String.fromCharCode(65+i)}.html`,
+            linkScripts: ['js/spanifyRun.js'],
+            scriptDependencies: ['js/spanify.js']}
+        )
 
-    - for(let i=0; i < 6; i++)
-        +partials_sea-object({color: '#ffdddd', className: 'red', link: `ana-0${i+1}.html`})
+    //- - for(let i=0; i < 6; i++)
+    //-     +partials_sea-object({color: '#ffdddd', className: 'red', link: `ana-0${i+1}.html`})
+
+    //Ana
+    +partials_sea-figure({img: '#ana-1', className: 'icono-ana', link: `ana-01.html`})
+    +partials_sea-figure({img: '#ana-2', className: 'icono-ana', link: `ana-02.html`})
+    +partials_sea-figure({img: '#ana-3', className: 'icono-ana', link: `ana-03.html`})
+    +partials_sea-figure({img: '#ana-4', className: 'icono-ana', link: `ana-04.html`})
+    +partials_sea-figure({img: '#ana-5', className: 'icono-ana', link: `ana-05.html`})
 
     - const modalNames = ['A1','A2','A3','A4','B1','C1','C2','D1','E1','E2'];
     - for(let name of modalNames)

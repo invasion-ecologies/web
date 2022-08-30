@@ -1,7 +1,9 @@
-//PUG Y SASS DESDE JS
+//MAIN.JS
 
-//En este proyecto usamos Pug y Sass de forma normal, con archivos .pug y .sass
-// compilados desde un script de Node.
+/*
+Este archivo existe solamente para tomar los archivos pug/sass del proyecto
+y renderizarlos a html/css
+*/
 
 const pug = require('pug');
 const sass = require('sass');
@@ -35,6 +37,11 @@ const modalFilenames = [
     'mariela-E1',
     'mariela-E2',
     'ana-01',
+    'ana-01-A',
+    'ana-01-B',
+    'ana-01-C',
+    'ana-01-D',
+    'ana-01-E',
     'ana-02',
     'ana-03',
     'ana-04',

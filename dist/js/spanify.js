@@ -1,0 +1,1 @@
+console.log('spanify dependency loaded');
