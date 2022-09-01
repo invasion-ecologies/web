@@ -40,7 +40,7 @@ mixin partials_sea-object(config)
 
 
 mixin partials_sea-figure(config)
-    - const {scriptDependencies, linkScripts, img, className, link} = config;
+    - const {dependencies, scripts, img, className, link} = config;
     //- Create rigged objects
     - const a = `${Math.floor(Math.random()*360)} ${Math.floor(Math.random()*360)} ${Math.floor(Math.random()*360)}`;
     - const rad = (className === 'greenSmall') ? '0.5' : '1';
@@ -48,11 +48,12 @@ mixin partials_sea-figure(config)
     - const materialString = `color: ${color}`;
     - const classString = `clickable ${className}`;
     - const positionString = `0 0 -${Math.round(Math.random()*2 + 4)}`;
-    - const scriptsString = linkScripts ? JSON.stringify(linkScripts) : '[]';
-    - const dependenciesString = scriptDependencies ? JSON.stringify(scriptDependencies) : '[]';
+    - const scriptsString = scripts ? JSON.stringify(scripts) : '[]';
+    - const dependenciesString = dependencies ? JSON.stringify(dependencies) : '[]';
     //-Markup
     a-entity.wanderer(animation rotation=a)
         a-image.js-load-content(
+            material="alphaTest: 0.5"
             class=classString
             position=positionString
             src=img
@@ -67,4 +68,3 @@ mixin partials_test-texto-hover(block)
     div(data-span-classes="hover-no-blur hover-no-shake")
         - if(block)
             block
-        <script>console.log('a')</script>

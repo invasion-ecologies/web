@@ -1,1 +1,0 @@
-console.log('spanify function calls');

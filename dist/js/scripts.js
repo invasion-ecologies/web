@@ -1,3 +1,13 @@
+//Inicializar objeto global app
+const App = {};
+
+//Inicializar utilidades globales (refactorizar?)
+const utils = {
+    forceReflow: (el) => {
+        el.getBoundingClientRect();
+    }
+};
+
 //Si estamos en el home, inicializar las figuras que se desplazan en a-frame
 if(document.querySelector('html').classList.contains('home')){
     //Wanderers
@@ -110,7 +120,7 @@ function loadModal(options){
     getContent({url: link}).then((wrapper) => {
         //1- Load dynamic DOM content    
         document.querySelector('body').append(wrapper); //agregar el contenido
-        forceReflow(wrapper); //Forzar reflow; preparar para transiciones
+        utils.forceReflow(wrapper); //Forzar reflow; preparar para transiciones
         setupLocalLoaderListeners(wrapper);
         setupLocalClosingListeners(wrapper);
 
@@ -123,24 +133,48 @@ function loadModal(options){
         }
 
         //2- Add scripts to the wrapper we just added to the DOM
-        registerScriptDependencies(dependencies);
-        registerDynamicScripts(scripts, wrapper);
+        registerScriptDependencies(dependencies)
+        .then(() => {registerDynamicScripts(scripts, wrapper)});
     });
 
 }
 
-function registerScriptDependencies(scripts){
-        const body = document.querySelector('body');
-        let alreadyLoadedScripts = [...document.querySelectorAll('script')].map(script => script.src);
-        for(let scriptUrl of scripts){
+function registerScriptDependencies(scriptsToLoad){
+    return new Promise((resolve) => {
+
+        const scriptLoadedPromises = [];
+        const alreadyLoadedScripts = [...document.querySelectorAll('script')].map(script => script.src);
+
+        for(let scriptUrl of scriptsToLoad){
                 if ( alreadyLoadedScripts.some(url => url.includes(scriptUrl)) ){
                     console.log(`${scriptUrl} already registered. Skipping`);
                     continue;
                 }
+                //Add script to the document
                 const scriptElement = document.createElement('script');
                 scriptElement.src = scriptUrl;
-                body.append(scriptElement);
-        } 
+                document.querySelector('body').append(scriptElement);
+                //Tell the function to wait for this script to finish loading before resolving
+                scriptLoadedPromises.push(getScriptLoadedPromise(scriptElement));
+        }
+
+        //Resolve after every dependency has loaded
+        if(scriptLoadedPromises.length > 0){
+            Promise.all(scriptLoadedPromises).then(() => {resolve()});
+        }
+        //Or resolve immediately if there is nothing to load
+        else {
+            resolve();
+        }
+    });
+}
+
+function getScriptLoadedPromise(scriptElement) {
+    return new Promise((resolve) => {
+        scriptElement.addEventListener('load', () => {
+            resolve();
+        })
+    });
 }
 
 function registerDynamicScripts(scripts, wrapper){
@@ -173,6 +207,3 @@ function getContent(options) {
 }
 
 
-function forceReflow(el){
-    el.getBoundingClientRect();
-}
