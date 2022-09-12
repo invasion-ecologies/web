@@ -49,7 +49,9 @@ mixin partials_sea-figure(config)
     - const materialString = `color: ${color}`;
     - const classString = `clickable ${className} ${link ? 'js-load-content' : ''}`;
     - const positionString = `0 0 -${Math.round(Math.random()*2 + 4)}`;
-    - const scaleString = link ? `2 ${aspectRatio ? 2/aspectRatio : 2} 0.1` : `1 ${aspectRatio ? 1/aspectRatio : 1} 0.1`;
+    //- - const scaleString = link ? `2 ${aspectRatio ? 2/aspectRatio : 2} 0.1` : `1 ${aspectRatio ? 1/aspectRatio : 1} 0.1`;
+    - const widthString = link ? 2 : 1;
+    - const heightString = link ? (aspectRatio ? 2/aspectRatio : 2) : (aspectRatio ? 1/aspectRatio : 1);
         //-Functionality
     - const scriptsString = scripts ? JSON.stringify(scripts) : '[]';
     - const dependenciesString = dependencies ? JSON.stringify(dependencies) : '[]';
@@ -65,7 +67,8 @@ mixin partials_sea-figure(config)
             href=link
             data-scripts=scriptsString
             data-dependencies=dependenciesString
-            scale=scaleString
+            width=widthString
+            height=heightString
         )
 
 
