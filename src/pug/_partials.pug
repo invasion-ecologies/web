@@ -39,11 +39,13 @@ mixin partials_test-ana
 //-             )
 
 
-mixin partials_sea-figure(config)
-    - const {img, className, link, dependencies, scripts, aspectRatio} = config;
+mixin partials_sea-figure(options)
+    - const {img, className, link, dependencies, scripts, aspectRatio} = options;
     //- Create rigged objects
         //-Figure
-    - const a = `${Math.floor(Math.random()*360)} ${Math.floor(Math.random()*360)} ${Math.floor(Math.random()*360)}`;
+    - const randAng = (min, max) => Math.floor(Math.random()*(max-min) + min);
+    - const initialRotationString = `${randAng(-15, 15)} ${randAng(0, 360)} 0`;
+
     - const rad = (className === 'greenSmall') ? '0.5' : '1';
     - const geometryString = `primitive: circle; radius: ${rad}`;
     - const materialString = `color: ${color}`;
@@ -58,7 +60,7 @@ mixin partials_sea-figure(config)
     -
         console.log(img);
     //-Markup
-    a-entity.wanderer(animation rotation=a)
+    a-entity.wanderer(animation rotation=initialRotationString)
         a-image(
             material="alphaTest: 0.5"
             class=classString
