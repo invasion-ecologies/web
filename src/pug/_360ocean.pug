@@ -8,6 +8,7 @@ a-scene(vr-mode-ui="enabled: false"
         img(id="ana-tibu" src="img/tibu.png")
         img(id="ana-medusa" src="img/medusa.png")
         img(id="ana-alga" src="img/alga.png")
+        img(id="ana-cotorra" src="img/cotorra.png")
         img(id="ana-alga-chiquito" src="img/alga_reves.png")
         img(id="ana-ave-chiquito" src="img/ave_reves.png")
 
@@ -62,63 +63,54 @@ a-scene(vr-mode-ui="enabled: false"
         wandererAnimation: { direction: 'right' }
     })
 
-    //- +partials_sea-figure({img: '#circulo-amarillo', className: 'icono-mariela', link: `mariela-E.html`, 
-    //-         scripts: ['js/mouseoverText.js'], dependencies: ['js/spanify.js'],
-    //- })
-
-    //- +partials_sea-figure({img: '#circulo-verde-chico', className: 'icono-mariela', link: `mariela-A1.html`})
-    //- +partials_sea-figure({img: '#circulo-verde-chico', className: 'icono-mariela', link: `mariela-A2.html`})
-    //- +partials_sea-figure({img: '#circulo-verde-chico', className: 'icono-mariela', link: `mariela-A3.html`})
-    //- +partials_sea-figure({img: '#circulo-verde-chico', className: 'icono-mariela', link: `mariela-A4.html`})
-    //- +partials_sea-figure({img: '#circulo-verde-chico', className: 'icono-mariela', link: `mariela-B1.html`})
-    //- +partials_sea-figure({img: '#circulo-verde-chico', className: 'icono-mariela', link: `mariela-C1.html`})
-    //- +partials_sea-figure({img: '#circulo-verde-chico', className: 'icono-mariela', link: `mariela-C2.html`})
-    //- +partials_sea-figure({img: '#circulo-verde-chico', className: 'icono-mariela', link: `mariela-D1.html`})
-    //- +partials_sea-figure({img: '#circulo-verde-chico', className: 'icono-mariela', link: `mariela-E1.html`})
-    //- +partials_sea-figure({img: '#circulo-verde-chico', className: 'icono-mariela', link: `mariela-E2.html`})
-
     //- Ana
 
     +partials_new-sea-figure({
         classes: ['icono-ana'],
-        image: { src: '#ana-ojo' },
+        image: { src: '#ana-ojo', aspectRatio: 0.884 },
         contentLoader: { link: `ana-01.html` },
         wandererAnimation: { direction: 'right' }
     })
     +partials_new-sea-figure({
         classes: ['icono-ana'],
-        image: { src: '#ana-ave', aspectRatio: 1.557 },
+        image: { src: '#ana-ave', aspectRatio: 1.321 },
         contentLoader: { link: `ana-02.html` },
         wandererAnimation: { direction: 'right' }
     })
     +partials_new-sea-figure({
         classes: ['icono-ana'],
-        image: { src: '#ana-tibu', aspectRatio: 2.463 },
+        image: { src: '#ana-tibu', aspectRatio: 2.469 },
         contentLoader: { link: `ana-03.html` },
         wandererAnimation: { direction: 'left' }
     })
     +partials_new-sea-figure({
         classes: ['icono-ana'],
-        image: { src: '#ana-medusa', aspectRatio: 1.333 },
+        image: { src: '#ana-medusa', aspectRatio: 1.089 },
         contentLoader: { link: `ana-04.html` },
         wandererAnimation: { direction: 'left' }
     })
     +partials_new-sea-figure({
         classes: ['icono-ana'],
-        image: { src: '#ana-alga', aspectRatio: 1.333 },
+        image: { src: '#ana-alga', aspectRatio: 1.433 },
         contentLoader: { link: `ana-05.html` },
         wandererAnimation: { direction: 'right' }
     })
-
     +partials_new-sea-figure({
         classes: ['icono-ana'],
-        image: { src: '#ana-ave-chiquito', aspectRatio: 1.557 },
+        image: { src: '#ana-cotorra', aspectRatio: 1.506 },
+        contentLoader: { link: `ana-06.html` },
         wandererAnimation: { direction: 'left' }
     })
 
     +partials_new-sea-figure({
         classes: ['icono-ana'],
-        image: { src: '#ana-alga-chiquito', aspectRatio: 1.333 },
+        image: { src: '#ana-ave-chiquito', aspectRatio: 1.321 },
+        wandererAnimation: { direction: 'left' }
+    })
+
+    +partials_new-sea-figure({
+        classes: ['icono-ana'],
+        image: { src: '#ana-alga-chiquito', aspectRatio: 1.433 },
         wandererAnimation: { direction: 'left' }
     })
 

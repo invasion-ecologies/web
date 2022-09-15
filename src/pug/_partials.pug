@@ -63,8 +63,8 @@ mixin partials_new-sea-figure(options)
         if(contentLoader){
             figure.classes.push('js-load-content');
             figure.link = contentLoader.link;
-            figure.dataScripts = contentLoader.scripts ? contentLoader.scripts : '[]';;
-            figure.dataDependencies = contentLoader.dependencies ? contentLoader.dependencies : '[]';
+            figure.dataScripts = contentLoader.scripts ? contentLoader.scripts : [];
+            figure.dataDependencies = contentLoader.dependencies ? contentLoader.dependencies : [];
         }
 
         if(wandererAnimation) {
