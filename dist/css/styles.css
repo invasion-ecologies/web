@@ -214,9 +214,15 @@ h1 {
 }
 
 .shape-popup {
-  width: 80%;
-  height: 80%;
+  width: 90%;
+  height: 90%;
   border-radius: 20px 0 20px 0;
+}
+@media screen and (min-width: 800px) {
+  .shape-popup {
+    width: 80%;
+    height: 80%;
+  }
 }
 
 .shape-fullscreen-overlay {
@@ -260,6 +266,17 @@ h1 {
 .l-spacer {
   --s: 0;
   height: var(--s);
+}
+
+.l-responsive-padding {
+  --m: 0;
+  --d: 0;
+  padding: var(--m);
+}
+@media screen and (min-width: 800px) {
+  .l-responsive-padding {
+    padding: var(--d);
+  }
 }
 
 #svgo-ave-pico path {

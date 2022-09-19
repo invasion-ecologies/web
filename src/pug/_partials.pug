@@ -7,7 +7,7 @@ mixin partials_modal(options, block)
         - if(options.palette === "fluid") palette = 'props-palette-fluid'
         div(class=palette)
             .l-flex.shape-fullscreen-overlay.u-background-color-secondary-tr.u-cursor-pointer.js-close-modal
-                div.shape-popup.u-color-primary.u-background-color-secondary-tr.u-padding(style="--p: 4em").u-cursor-auto.u-overflow-y-scroll
+                div.shape-popup.u-color-primary.u-background-color-secondary-tr.l-responsive-padding(style="--m: 2em; --d: 4em").u-cursor-auto.u-overflow-y-scroll
                     -if(block)
                         block
 
