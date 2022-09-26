@@ -452,6 +452,18 @@ h1 {
   animation-name: none;
 }
 
+#preloader-icon {
+  opacity: 0;
+  transform: scale(0.96);
+  animation: SVG-main-preloader_opacity 2000ms ease-in-out 0ms;
+}
+
+@keyframes SVG-main-preloader_opacity {
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 .acc-sr-only {
   position: absolute;
   width: 1px;
