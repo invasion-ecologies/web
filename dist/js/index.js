@@ -4,8 +4,8 @@
 
 //Inicializar objeto global app
 const App = {};
-const aframeScene = document.querySelector('a-scene');
-const preloader = document.querySelector('#app-preloader');
+App.aframeScene = document.querySelector('a-scene');
+App.preloader = document.querySelector('#app-preloader');
 
 //Inicializar utilidades globales (refactorizar?)
 const utils = {
@@ -14,14 +14,15 @@ const utils = {
     }
 };
 
-aframeScene.addEventListener('loaded', ()=>{
-    //Wanderers
-    const WDR = new Wanderers('.wanderer');
-    //Asignar event listeners a las figuras para abrir los modales
-    setupGlobalLoaderListeners();
+//Wanderers
+App.wanderers = new Wanderers('.wanderer');
+//Asignar event listeners a las figuras para abrir los modales
+setupGlobalLoaderListeners();
+
+App.aframeScene.addEventListener('loaded', ()=>{
     //Esperar 1 segundo más y liberar overlay
     setTimeout(() => {
-        App.StateComponents.changeState(preloader, 'overlay', 'default');
+        App.StateComponents.changeState(App.preloader, 'overlay', 'default');
     }, 1000);
 });
 
