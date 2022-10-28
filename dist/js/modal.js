@@ -1,240 +1,175 @@
 
-//TODO: Agrupar estas funciones en un componente/clase Modal
+class Modal {
+    constructor(options) {
+        const { HTMLUrl, scriptUrl, beforeInsert, afterInsert, beforeRemove, afterRemove } = options;
+        this.HTMLUrl = HTMLUrl;
+        this.scriptUrl = scriptUrl;
+        this.modalFunctions = {beforeInsert, afterInsert, beforeRemove, afterRemove};
+        console.log(this.modalFunctions);
 
-/*
-TODO:
-
-Modelar toda la parte de modales de la siguiente manera:
-
-- .js-content-loader es un componente de comportamiento.
-Hay un gestor de componentes que rastrea esa clase en el DOM y añade
-event listeners o nuevas clases en el setup, basado en un objeto-modelo
-de ese componente (igual que los state components)
-
-- setupModalListeners: solo agrega listeners de apertura/cierre, y pasa como callback una
-función que gestiona la apertura/cierre de modales.
-
-- swapModal(target): función que cierra un modal (de haberlo) y abre otro. Llama
-a las funciones destroyModal() y loadModal(). En algún lado debería haber una
-propiedad que guarde una referencia al wrapper actual, generado por loadModal().
-
-- destroyModal(current): Realiza dos acciones en secuencia:
-* App.stateComponents.changeState(modal, 'overlay', 'invisible')
-* .then( (wrapper) => { wrapper.remove } );
-
-- getContent(url): está perfecto como está. Solo retorna un div de contenido.
-
-- addModal(wrapper): Realiza cuatro acciones en secuencia:
-* agrega el wrapper al DOM. then ->
-*   agrega event listeners a los elementos del DOM (inicializa localmente behavior/state components).
-*   registra dependencias de JS. then ->
-*       carga scripts locales al final del DOM.
-Cada una de estas tareas es llamada por una sola línea de código o función.
-
-registerScriptDependencies(scripts): Registra dependencias de forma global y persistente.
-
-registerDynamicScripts(scripts, wrapper): Agrega scripts a un wrapper y los ejecuta.
-
-*/
-
-class Modals {
-    constructor(options){
-        const {modalSelector, afterInsertFunction, showingFunction, hidingFunction} = options;
-        this.modalSelector = modalSelector;
-        this.showingFunction = showingFunction;
-        this.hidingFunction = hidingFunction;
-        this.afterInsertFunction = afterInsertFunction;
-        this.setupGlobalLoaderListeners();
+        this.HTMLContent = undefined;
+        this.modalFunctions = {};
     }
 
-    setupGlobalLoaderListeners () {
-        //Listeners que existen mientras la página esté abierta
-        const contentLoaders = document.querySelectorAll('.js-load-content');
-        for(let loader of contentLoaders){
-            loader.addEventListener('click', (event) => {
-                event.preventDefault();
-                let link = event.target.getAttribute('href');
-                let scripts = event.target.dataset.scripts ? JSON.parse(event.target.dataset.scripts) : [];
-                let dependencies = event.target.dataset.dependencies ? JSON.parse(event.target.dataset.dependencies) : [];
-                this.loadModal({
-                    link: link,
-                    scripts: scripts,
-                    dependencies: dependencies,
-                });
-            })
-        }
-    }
-
-    loadModal(options){
-        let {link, scripts, dependencies} = options;
-        if ([link, scripts, dependencies].some((value) => {return value === undefined})){
-            throw 'undefined arguments found for loadModal';
-        }
-    
-        //Después de obtener un elemento HTML con contenido:
-        this.getContent({url: link}).then((wrapper) => {
-            //1- Load dynamic DOM content    
-            document.querySelector('body').append(wrapper); //agregar el contenido
-            this.afterInsertFunction();
-            utils.forceReflow(wrapper); //Forzar reflow; preparar para transiciones
-            this.setupLocalLoaderListeners(wrapper);
-            this.setupLocalClosingListeners(wrapper);
-    
-            const modal = wrapper.querySelector(this.modalSelector);
-            this.showingFunction(modal);
-
-            //2- Add scripts to the wrapper we just added to the DOM
-            this.registerScriptDependencies(dependencies)
-            .then(() => {this.registerDynamicScripts(scripts, wrapper)});
-        });
-    }
-
-    getContent(options) {
-        return new Promise((resolve) => {
-    
-            const {url, wrapperClasses, wrapperId, parent} = options;
-            fetch('contents/'+url).then((response) => {
+    /** Gets HTML content from the file specified in this.HTMLUrl,
+     * and assigns it to this.HTMLContent. All the retrieved content is put
+     * inside a wrapper <div> element.
+    * @param {object} Options <div> Options object. Available properties: wrapperClasses, wrapperID
+    */
+    loadHTMLContent(options={}) {
+        return new Promise( (resolve) => {
+            const { wrapperClasses, wrapperID } = options;
+            fetch(this.HTMLUrl)
+            .then((response) => {
                 return response.text();
             })
             .then((content) => {
                 const wrapper = document.createElement('div');
-                if(wrapperClasses !== undefined) {
-                    for(let className of wrapperClasses) { wrapper.classList.add(className) };
+                if (wrapperClasses !== undefined) {
+                    for (let className of wrapperClasses) {
+                        wrapper.classList.add(className)
+                    };
                 }
-                if(wrapperId !== undefined) wrapper.id = wrapperId;
+                if (wrapperID !== undefined) wrapper.id = wrapperID;
+                //Register content in class property
                 wrapper.innerHTML = content;
-                resolve(wrapper);
+                this.HTMLContent = wrapper;
+                console.log('resolving content');
+                resolve();
             });
-    
         });
     }
 
-    setupLocalClosingListeners(wrapper) {
-        const contentClosers = wrapper.querySelectorAll('.js-close-modal');
-    
-        for(let closer of contentClosers){
-            closer.addEventListener('click', function localContentCloser(event) {
-                event.preventDefault();
-                let element = event.target;
-                if(element.classList.contains('js-close-modal')){
-                    element.removeEventListener('click', localContentCloser);
-                    //Ocultar y eliminar contenido actual
-                    this.hideModal(wrapper).then(() => {
-                        wrapper.remove();
-                    });
-                }
-    
-            }.bind(this));
+    fillEmptyFunctions(){
+        console.log('filling empty functions');
+        //Asignar funciones vacías a las funciones no asignadas
+        for(let func of ['beforeInsert', 'afterInsert', 'beforeRemove', 'afterRemove']){
+            if (this.modalFunctions[func] === undefined) {
+                this.modalFunctions[func] = () => {
+                    return new Promise((resolve) => {
+                            resolve();
+                        });
+                    };
+            }
         }
     }
 
-    setupLocalLoaderListeners (wrapper) {
-        //Loaders que dejan de existir al cargar un nuevo contenido
-        const contentLoaders = wrapper.querySelectorAll('.js-load-content');
-        for(let loader of contentLoaders){
-            loader.addEventListener('click', function localContentLoader(event) {
-                event.preventDefault();
-                let element = event.target;
-                element.removeEventListener('click', localContentLoader);
-                let link = element.getAttribute('href');
-                let scripts = element.dataset.scripts ? JSON.parse(element.dataset.scripts) : [];
-                let dependencies = element.dataset.scripts ? JSON.parse(element.dataset.dependencies) : [];
-    
-                //Eliminar contenido actual, y después mostrar el nuevo contenido
-                this.hideModal(wrapper).then(() => {
-                    wrapper.remove();
-                    this.loadModal({
-                        link: link,
-                        scripts: scripts,
-                        dependencies: dependencies,
-                    });
+    loadFunctions(){
+        console.log('loading functions');
+        return new Promise((resolve) => {
+            if(this.scriptUrl){
+                import(this.scriptUrl)
+                .then( (module) => {
+                    console.log('loading module default into modal functions');
+                    this.modalFunctions = module.default;
+                    this.fillEmptyFunctions();
+                    resolve();
                 });
-            }.bind(this));
-        }
-    }
-
-    hideModal(wrapper){
-        const modal = wrapper.querySelector(this.modalSelector);
-        return new Promise((resolve, reject) => {
-            modal.addEventListener('transitionend', () => { resolve(); });
-            this.hidingFunction(modal);
-            // if(popupBody.classList.contains('view-fade-in--visible')){
-            //     popupBody.classList.remove('view-fade-in--visible');
-            // }
-           
-            // if(popupBody.classList.contains('view-togglable-pointer-events--active')){
-            //     popupBody.classList.remove('view-togglable-pointer-events--active');
-            // }
-        });
-    }
-
-    registerScriptDependencies(scriptsToLoad){
-        return new Promise((resolve) => {
-
-            //TODO: Llevar registro de dependencias cargadas en App, y no en el DOM.
-            //No debería ser _necesario_, porque nada va a borrar los script tags del DOM,
-            //Así que dejarlo para lo último.
-            const scriptLoadedPromises = [];
-            const alreadyLoadedScripts = [...document.querySelectorAll('script')].map(script => script.src);
-    
-            //TODO: Ver si podemos convertir esto en un map/filter. Así no se complejiza demasiado.
-            for(let scriptToLoad of scriptsToLoad){
-                //Verificar si tenemos un string solo (shortcut), o un objeto con atributos
-                let hasConfigObject = typeof scriptToLoad === 'object';
-
-                //Verificar que la dependencia no se haya registrado ya
-                let scriptUrl = hasConfigObject ?
-                    scriptToLoad.src :
-                    scriptToLoad;
-
-                if ( alreadyLoadedScripts.some(url => url.includes(scriptUrl)) ){
-                    console.log(`${scriptUrl} already registered. Skipping`);
-                    continue;
-                }
-
-                //Add script to the document
-                const scriptElement = document.createElement('script');
-
-                if (hasConfigObject){
-                    for (let prop in scriptToLoad){
-                        scriptElement.setAttribute(prop, scriptToLoad[prop]);
-                    }
-                }
-                else { scriptElement.src = scriptUrl; }
-
-                document.querySelector('body').append(scriptElement);
-                
-                //Tell the function to wait for this script to finish loading before resolving
-                scriptLoadedPromises.push(this.getScriptLoadedPromise(scriptElement));
             }
-    
-            //Resolve after every dependency has loaded
-            if(scriptLoadedPromises.length > 0){
-                Promise.all(scriptLoadedPromises).then(() => {resolve()});
-            }
-            //Or resolve immediately if there is nothing to load
             else {
+                //resolve immediately
+                this.fillEmptyFunctions();
+                console.log('resolving functions');
                 resolve();
             }
+
         });
     }
 
-    getScriptLoadedPromise(scriptElement) {
-        return new Promise((resolve) => {
-            scriptElement.addEventListener('load', () => {
-                resolve();
+    loadContentAndFunctions() {
+        return new Promise( (resolve) => {
+            this.loadHTMLContent({
+                wrapperClasses: ['modal-wrapper']
             })
-        });
+            .then( () => this.loadFunctions() )
+            .then( () => { resolve() } );
+        } );
     }
-
-    registerDynamicScripts(scripts, wrapper){
-        for (let scriptUrl of scripts){
-            const scriptElement = document.createElement('script');
-            scriptElement.src = scriptUrl;
-            wrapper.append(scriptElement);
-        }
-    }
-
 }
 
 
+// Sistema de modales gestionado de forma unificada.
+class Modals {
+    constructor(options) {
+        const { modalsList={}, displayFunction, hidingFunction } = options;
+        this.modals = modalsList;
+        this.displayFunction = displayFunction;
+        this.hidingFunction = hidingFunction;
+
+        this.activeModalName = undefined;
+    }
+
+
+    createModal(name, modalOptions) {
+        const modal = new Modal(modalOptions);
+        this.modals[name] = modal;
+    }
+
+    displayModal(modalName) {
+        this.activeModalName = modalName;
+        console.log('active modal:', this.activeModalName);
+        return new Promise((resolve) => {
+            const modal = this.modals[modalName];
+            // console.log(App.modalManager.modals[modalName]);
+            // console.log(modal);
+            modal.modalFunctions.beforeInsert()
+            .then(() => {
+                return this.displayFunction(modal);
+            })
+            .then(() => {
+                return modal.modalFunctions.afterInsert();
+            })
+            .then(() => {
+                resolve();
+            });
+        });
+
+    }
+
+    hideModal(name) {
+        console.log('modals - hide modal:', name);
+        return new Promise((resolve) => {
+            
+            //Try to close only once, even if triggered many times
+            if (this.activeModalName === name) {
+                this.activeModalName = undefined;
+                console.log('hide modal promise')
+                const modal = this.modals[name];
+                modal.modalFunctions.beforeRemove()
+                .then(() => {
+                    return this.hidingFunction(modal);
+                })
+                .then(() => {
+                    return modal.modalFunctions.afterRemove();
+                })
+                .then(() => {
+                    resolve();
+                });
+            }
+            else {
+                //If it is not open, resolve immediately without closing
+                resolve();
+            }
+
+
+        });
+    }
+
+    switchToModal(name) {
+        console.log('switching to modal:', name);
+        //Si hay algo abierto, cerrarlo
+        if (this.activeModalName !== undefined){
+            console.log('closing previous modal:', this.activeModalName);
+            this.hideModal(this.activeModalName)
+            .then( () => {
+                console.log('Displaying modal:', name);
+                this.displayModal(name);
+            })
+        }
+        else {
+            //Si no, simplemente abrir el modal
+            console.log('no modal active. Displaying modal:', name)
+            this.displayModal(name);
+        }
+    }
+}

@@ -1,46 +1,81 @@
 
+//- Contenidos:
+
+//- Modales
+//- Figuras del mar
+
+
+
+
+//----------------------------
+
+
+//- Modales
 
 mixin partials_modal(options, block)
     //- #popup-main.view-togglable-pointer-events.view-fade-in
-    #popup-main.js-state-components(
+    #popup-main.u-transition-04s.js-state-components(
         data-component-name="overlay"
         data-component-state="default"
     )
         - let palette;
+        - let modalName = options.name;
         - if(options.palette === "material") palette = 'props-palette-material'
         - if(options.palette === "fluid") palette = 'props-palette-fluid'
         div(class=palette)
-            .l-flex.shape-fullscreen-overlay.u-background-color-secondary-tr.u-cursor-pointer.js-close-modal
+            .l-flex.shape-fullscreen-overlay.u-background-color-secondary-tr.u-cursor-pointer.js-close-modal(
+                data-modal-name=modalName
+            )
                 div.shape-popup.u-color-primary.u-background-color-secondary-tr.l-responsive-padding(style="--m: 2em; --d: 4em").u-cursor-auto.u-overflow-y-scroll
                     -if(block)
                         block
 
-//- mixin partials_sea-object(config)
-//-     - const {scriptDependencies, linkScripts, color, className, link} = config;
-//-     //- Create rigged objects
-//-     - const a = `${Math.floor(Math.random()*360)} ${Math.floor(Math.random()*360)} ${Math.floor(Math.random()*360)}`;
-//-     - const rad = (className === 'greenSmall') ? '0.5' : '1';
-//-     - const geometryString = `primitive: circle; radius: ${rad}`;
-//-     - const materialString = `color: ${color}`;
-//-     - const classString = `clickable ${className}`;
-//-     - const positionString = `0 0 -${Math.round(Math.random()*2 + 4)}`;
-//-     - const scriptsString = linkScripts ? JSON.stringify(linkScripts) : '[]';
-//-     - const dependenciesString = scriptDependencies ? JSON.stringify(scriptDependencies) : '[]';
-//-     //-Markup
-//-     a-entity.wanderer(animation rotation=a)
-//-         a-entity.js-load-content(
-//-             class=classString
-//-             geometry=geometryString
-//-             material=materialString
-//-             position=positionString
-//-             href=link
-//-             data-scripts=scriptsString
-//-             data-dependencies=dependenciesString
-//-             )
+mixin partials_modal--mariela(options, block)
+    -let modalName = options.name
+    +partials_modal({palette: 'fluid', name: modalName})
+        a.js-close-modal(data-modal-name=modalName) [X Cerrar]
+        article.content
+            - if (block)
+                block
+
+mixin partials_modal--ana(options, block)
+    -let modalName = options.name
+    +partials_modal({palette: 'fluid', name: modalName})
+        .popup-content-wrapper.l-flex.u-height-100.u-width-100
+            .l-grid.u-height-100.u-width-100(style="--r: min-content auto")
+
+                a.js-close-modal(data-modal-name=modalName style="grid-row: 1/2") [X Cerrar]
+
+                .l-flex.l-abs.u-height-100.u-width-100(style="grid-row: 2/3")
+                    - if(block)
+                        block
+
+
+mixin partials_modal--first-text(options, block)
+    - let modalName = options.name
+    +partials_modal({palette: 'fluid', name: modalName})
+        +partials_first-text-wrapper(modalName)
+            - if (block)
+                block
+
+mixin partials_first-text-wrapper(name, block)
+    .l-flex.u-min-height-100
+        article.content.u-text-align-center
+            a.u-color-accent.u-cursor-pointer.js-close-modal(data-modal-name=name) [ Salir ]
+            - if (block)
+                block
+
+mixin partials_first-text-external-link(text, url)
+    a.filter-interactive-blur.animation-interactive-shake.u-display-inline-block(target="_blank" href=url)=text
+
+mixin partials_first-text-internal-link(name, text)
+    - let url = `contents/${name}.html`;
+    a.filter-interactive-blur.animation-interactive-shake.u-display-inline-block.js-load-content(data-modal-name=name href=url)=text
 
 
 
-//- TODO: terminar de implementar este componente
+
+//- Figuras del mar
 
 mixin partials_new-sea-figure(options)
     //-JS Logic
@@ -65,9 +100,14 @@ mixin partials_new-sea-figure(options)
 
         if(contentLoader){
             figure.classes.push('js-load-content');
+
+            figure.modalName = contentLoader.modalName ? contentLoader.modalName : undefined;
             figure.link = contentLoader.link;
-            figure.dataScripts = contentLoader.scripts ? contentLoader.scripts : [];
-            figure.dataDependencies = contentLoader.dependencies ? contentLoader.dependencies : [];
+            figure.dataScripts = contentLoader.script ? contentLoader.script : undefined;
+            figure.beforeInsert = contentLoader.beforeInsert ? contentLoader.beforeInsert : undefined;
+            figure.afterInsert = contentLoader.afterInsert ? contentLoader.afterInsert : undefined;
+            figure.beforeRemove = contentLoader.beforeRemove ? contentLoader.beforeRemove : undefined;
+            figure.afterRemove = contentLoader.afterRemove ? contentLoader.afterRemove : undefined;
         }
 
         if(wandererAnimation) {
@@ -87,8 +127,12 @@ mixin partials_new-sea-figure(options)
             position=figure.position
             src=figure.src
             href=figure.link
-            data-scripts=JSON.stringify(figure.dataScripts)
-            data-dependencies=JSON.stringify(figure.dataDependencies)
+            data-scripts=figure.dataScripts
+            data-before-insert=figure.beforeInsert
+            data-after-insert=figure.afterInsert
+            data-before-remove=figure.beforeRemove
+            data-after-remove=figure.afterRemove
+            data-modal-name=figure.modalName
             width=figure.width
             height=figure.height
         )
@@ -136,7 +180,7 @@ mixin partials_sea-figure(options)
 
 
 
-mixin partials_test-texto-hover(block)
+mixin partials_test-audio()
     audio.u-display-none.audio-player.voice-over(src="audio/voice-over.mp3" preload="metadata" controls="false")
     .player-progress.u-cursor-pointer.l-abs.u-width-100.u-height.u-background-color(
         style="--h: 5px; --b: var(--color-primary)"

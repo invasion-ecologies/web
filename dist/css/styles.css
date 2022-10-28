@@ -69,6 +69,10 @@ h1 {
   color: var(--color-primary);
 }
 
+.u-color-accent {
+  color: var(--color-accent);
+}
+
 .u-display-inline-block {
   display: inline-block;
 }
@@ -106,6 +110,10 @@ h1 {
   overflow-y: scroll;
 }
 
+.u-min-height-100 {
+  min-height: 100%;
+}
+
 .u-position-absolute {
   position: absolute;
 }
@@ -124,6 +132,10 @@ h1 {
 
 .u-text-align-center {
   text-align: center;
+}
+
+.u-transition-04s {
+  transition: 0.4s;
 }
 
 .u-width-100 {
