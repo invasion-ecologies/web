@@ -4,7 +4,7 @@
   --color-primary: #302d13;
   --color-primary-tr: rgba(48, 45, 19, 0.7);
   --color-secondary: #f5e7d3;
-  --color-secondary-tr: rgba(245,231,211,0.75);
+  --color-secondary-tr: rgba(245,231,211,0.7);
   --color-accent: #bf5161;
   --s1: 1em;
   --s2: 2em;
@@ -194,7 +194,7 @@ h1 {
   --color-primary: #302d13;
   --color-primary-tr: rgba(48, 45, 19, 0.7);
   --color-secondary: #f5e7d3;
-  --color-secondary-tr: rgba(245,231,211,0.85);
+  --color-secondary-tr: rgba(245,231,211,0.7);
   --color-accent: #bf5161;
 }
 
