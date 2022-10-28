@@ -99,11 +99,11 @@ const App = {
                 selector: '.js-close-modal',
                 type: 'click',
                 callbackFunction: (e) => {
-                    e.preventDefault();
-                    const target = e.target;
-                    const modalName = target.dataset.modalName;
                     //Do something only if we click exactly on the target
                     if(target.classList.contains('js-close-modal')){
+                        e.preventDefault();
+                        const target = e.target;
+                        const modalName = target.dataset.modalName;
                         App.modalManager.hideModal(modalName);
                     }
                 },
