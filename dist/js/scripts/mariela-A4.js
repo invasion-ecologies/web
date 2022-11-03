@@ -26,10 +26,12 @@ const afterInsert = () => {
         canvas.style.objectFit = 'contain';
         const ctx = canvas.getContext('2d');
 
+        //https://stackoverflow.com/questions/1067320/save-canvas-contents-to-be-redrawn-in-later-animation-frames
+
         //Init rendering
         // window.requestAnimationFrame(() => {
-            ctx.fillStyle = "#000000";
-            drawPoster(ctx);
+            // ctx.fillStyle = "#000000";
+            // drawPoster(ctx);
         //     ctx.globalCompositeOperation = 'destination-in';
         //     ctx.fillRect(0, 0, 512, 300);
         // });
