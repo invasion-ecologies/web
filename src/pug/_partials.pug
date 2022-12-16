@@ -270,11 +270,12 @@ mixin partials_audio-player(audioUrl, playerName="audio-player")
                 //- img.u-cursor-pointer.audio-control(src="img/icon-pause.svg", alt="Pause" data-audio-player-behavior="pause")
                 //- img.u-cursor-pointer.audio-control(src="img/icon-stop.svg", alt="Stop" data-audio-player-behavior="stop")
         style.
-            .audio-control {
-                opacity: 0.5;
+            .audio-control > path {
+                fill: rgba(0, 0, 0, 1);
+                transition: 0.4s;
             }
-            .audio-control.active {
-                opacity: 1;
+            .audio-control.active > path {
+                fill: var(--color-accent);
             }
 
 
@@ -283,6 +284,7 @@ mixin partials_podcast-audio-player(audioUrl)
     +partials_audio-player(audioUrl)
     style.
         .audio-control {
+            height: 2.5em;
             width: 2.5em;
         }
    
